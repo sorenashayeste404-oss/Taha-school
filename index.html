@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="برنامه ۱۰ مدرسه طاها">
+  <title>برنامه ۱۰ مدرسه طاها</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status"></div>
+
+  <header class="topbar">
+    <div class="brand" id="homeBtn" tabindex="0" role="button">
+      <div class="brand-mark">ط</div>
+      <div>
+        <strong>مدرسه طاها</strong>
+        <span>برنامه ۱۰</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="adminNavBtn" class="ghost-btn">پنل مدیر</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="studentSelection" class="view active">
+      <div class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">برنامه آموزشی مدرسه</span>
+          <h1>برنامه کلاس‌ها و کارهای روزانه</h1>
+          <p>رشته و شعبه خود را انتخاب کنید تا برنامه هفتگی نمایش داده شود.</p>
+        </div>
+        <div class="hero-icon">📚</div>
+      </div>
+
+      <div class="selection-card">
+        <h2>۱. انتخاب رشته</h2>
+        <div class="choice-grid" id="majorChoices">
+          <button class="choice-card" data-major="experimental"><span>🧪</span><b>دهم تجربی</b><small>رشته علوم تجربی</small></button>
+          <button class="choice-card" data-major="math"><span>📐</span><b>دهم ریاضی</b><small>رشته ریاضی و فیزیک</small></button>
+          <button class="choice-card" data-major="humanities"><span>📖</span><b>دهم انسانی</b><small>رشته علوم انسانی</small></button>
+        </div>
+
+        <div id="branchStep" class="branch-step hidden">
+          <h2>۲. انتخاب شعبه</h2>
+          <div class="choice-grid branch-grid" id="branchChoices">
+            <button class="choice-card branch-card" data-branch="1"><span>🏫</span><b>شعبه ۱</b><small>مشاهده برنامه شعبه ۱</small></button>
+            <button class="choice-card branch-card" data-branch="2"><span>🏫</span><b>شعبه ۲</b><small>مشاهده برنامه شعبه ۲</small></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="studentSchedule" class="view">
+      <div class="page-heading">
+        <div>
+          <button id="backToSelection" class="back-btn">→ تغییر رشته / شعبه</button>
+          <h1 id="scheduleTitle">برنامه هفتگی</h1>
+          <p id="scheduleSubtitle"></p>
+        </div>
+        <button id="refreshStudent" class="secondary-btn">↻ بروزرسانی</button>
+      </div>
+      <div id="studentLoading" class="loading-card">در حال دریافت برنامه از Firebase...</div>
+      <div id="scheduleGrid" class="schedule-grid"></div>
+      <div id="studentEmpty" class="empty-state hidden">
+        <div>📭</div>
+        <h3>هنوز برنامه‌ای ثبت نشده</h3>
+        <p>برای این رشته و شعبه، اطلاعاتی در Firestore وجود ندارد.</p>
+      </div>
+    </section>
+
+    <section id="adminLogin" class="view">
+      <div class="auth-card">
+        <div class="auth-icon">🔐</div>
+        <h1>ورود مدیر</h1>
+        <p>برای ورود از ایمیل و رمز عبور ثبت‌شده در Firebase Authentication استفاده کنید.</p>
+        <form id="loginForm">
+          <label>ایمیل
+            <input id="loginEmail" type="email" autocomplete="username" required placeholder="admin@example.com">
+          </label>
+          <label>رمز عبور
+            <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="رمز عبور">
+          </label>
+          <button class="primary-btn" type="submit">ورود به پنل</button>
+        </form>
+        <button id="backHomeFromLogin" class="text-btn">بازگشت</button>
+      </div>
+    </section>
+
+    <section id="adminPanel" class="view">
+      <div class="page-heading admin-heading">
+        <div>
+          <span class="eyebrow">مدیریت محتوا</span>
+          <h1>پنل مدیر</h1>
+          <p id="adminUserLabel"></p>
+        </div>
+        <button id="logoutBtn" class="secondary-btn">خروج</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><span>کلاس‌های ثبت‌شده</span><strong id="classCount">۰</strong></div>
+        <div class="stat-card"><span>کارهای روزانه</span><strong id="taskCount">۰</strong></div>
+        <div class="stat-card"><span>مجموع اطلاعات</span><strong id="totalCount">۰</strong></div>
+      </div>
+
+      <div class="admin-layout">
+        <div class="form-card">
+          <div class="card-title">
+            <div><span class="section-icon">🗓️</span><div><h2 id="classFormTitle">ثبت کلاس</h2><p>برنامه هفتگی را مدیریت کنید.</p></div></div>
+          </div>
+          <form id="classForm">
+            <input id="classId" type="hidden">
+            <div class="form-row">
+              <label>رشته<select id="classMajor" required></select></label>
+              <label>شعبه<select id="classBranch" required><option value="1">شعبه ۱</option><option value="2">شعبه ۲</option></select></label>
+            </div>
+            <div class="form-row">
+              <label>روز<select id="classDay" required></select></label>
+              <label>ساعت<input id="classTime" type="text" required placeholder="08:00 - 09:30"></label>
+            </div>
+            <label>نام درس<input id="classSubject" type="text" required maxlength="80" placeholder="مثلاً ریاضی"></label>
+            <div class="form-actions">
+              <button class="primary-btn" type="submit" id="classSubmitBtn">ثبت کلاس</button>
+              <button class="secondary-btn hidden" type="button" id="classCancelBtn">لغو ویرایش</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-card">
+          <div class="card-title">
+            <div><span class="section-icon">✅</span><div><h2 id="taskFormTitle">ثبت کار روزانه</h2><p>کارها را دقیقاً زیر برنامه همان روز نمایش دهید.</p></div></div>
+          </div>
+          <form id="taskForm">
+            <input id="taskId" type="hidden">
+            <div class="form-row">
+              <label>رشته<select id="taskMajor" required></select></label>
+              <label>شعبه<select id="taskBranch" required><option value="1">شعبه ۱</option><option value="2">شعبه ۲</option></select></label>
+            </div>
+            <label>روز<select id="taskDay" required></select></label>
+            <label>عنوان<input id="taskTitle" type="text" required maxlength="100" placeholder="مثلاً حل تمرین صفحه ۴۲"></label>
+            <label>توضیح<textarea id="taskDescription" rows="3" maxlength="500" placeholder="توضیحات تکمیلی (اختیاری)"></textarea></label>
+            <div class="form-actions">
+              <button class="primary-btn" type="submit" id="taskSubmitBtn">ثبت کار روزانه</button>
+              <button class="secondary-btn hidden" type="button" id="taskCancelBtn">لغو ویرایش</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="admin-table-card">
+        <div class="table-header"><h2>کلاس‌های ثبت‌شده</h2><button id="reloadAdminData" class="secondary-btn">↻ بروزرسانی</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>رشته</th><th>شعبه</th><th>روز</th><th>ساعت</th><th>درس</th><th>عملیات</th></tr></thead>
+          <tbody id="classesTableBody"></tbody></table>
+        </div>
+        <div id="classesTableEmpty" class="table-empty hidden">کلاسی ثبت نشده است.</div>
+      </div>
+
+      <div class="admin-table-card">
+        <div class="table-header"><h2>کارهای روزانه ثبت‌شده</h2></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>رشته</th><th>شعبه</th><th>روز</th><th>عنوان</th><th>توضیح</th><th>عملیات</th></tr></thead>
+          <tbody id="tasksTableBody"></tbody></table>
+        </div>
+        <div id="tasksTableEmpty" class="table-empty hidden">کاری ثبت نشده است.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>برنامه ۱۰ مدرسه طاها · ساخته‌شده با Firebase</footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
